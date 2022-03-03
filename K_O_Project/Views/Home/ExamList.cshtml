@@ -1,0 +1,25 @@
+﻿@model List<K_O_Project.Models.Entities.Exam>
+@{
+    ViewData["Title"] = "ExamList";
+}
+
+<table class="table table-bordered">
+    <tr>
+        
+        <th>Title</th>
+        <th>Date</th>
+        <th>Delete</th>
+        <th>Select</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            
+            <td>@item.Title</td>
+            <td>@item.CreateDate</td>
+            <td><a href="~/Home/ExamDelete/@item.Id" class="btn btn-outline-danger" >Delete</a></td>
+            <td><a href="~/Exam/GetExam/@item.Id" class="btn btn-outline-primary" >Select</a></td>           
+        </tr>
+    }   
+</table>
+

@@ -1,0 +1,122 @@
+﻿@using K_O_Project.Models.Entities
+@{
+    Layout = null;
+}
+@model Exam
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Exam</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/K_O_Project.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <form id="examForm" name="exam">
+        <div class="row">
+            <input type="hidden" value="@Model.Id" name="examId" />
+
+            <p class="display-5" style="text-align:center"><strong>@Model.Title</strong></p>
+
+            <p class="lead">@Model.Content</p>
+        </div>
+        <div class="container">
+            <div class="row">
+                @foreach (var question in Model.Questions)
+                {
+                    var count = (Model.Questions.IndexOf(question)) + 1;
+
+                    <div class="col-6">
+                        <label><strong>@count-) @question.Title</strong></label>
+
+                        <input type="hidden" name="soru@(Model.Questions.IndexOf(question))" value="@question.Id" />
+                        <br />
+                        @foreach (var option in question.Options.OrderBy(x => x.OptionName).ToList())
+                        {
+
+                            <input type="radio" id="@question.Id" name="secenek@(Model.Questions.IndexOf(question))" value="@option.OptionName">
+                            <label id="@option.Id" for="html">@(option.OptionName +" "+ @option.Title) </label>
+                            <br />
+
+                        }
+
+                        <br />
+                        <br />
+                    </div>
+
+                }
+            </div>
+        </div>
+        <div class="row">
+            <input class="btn btn-outline-primary" type="submit" />
+            <a href="~/Home/ExamList" class="btn btn-outline-secondary">Geri Dön</a>
+        </div>
+
+
+    </form>
+</body>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+
+        $("#examForm").submit(function(e) {
+
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+        const param =
+            {
+                examId:exam.examId.value
+            ,
+            examAnswers:
+            [
+                {questionId:exam.soru0.value,selectedAnswer:exam.secenek0.value},
+                {questionId:exam.soru1.value,selectedAnswer:exam.secenek1.value},
+                {questionId:exam.soru2.value,selectedAnswer:exam.secenek2.value},
+                {questionId:exam.soru3.value,selectedAnswer:exam.secenek3.value}
+            ]
+            };
+
+        $.ajax({
+            method: "POST",
+            url: "/Exam/CompleteExam",
+            headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'RequestVerificationToken':
+                            $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+            data: JSON.stringify(param),
+            contentType:"application/json; charset:utf-8",
+            dataType:"json",
+            success: function(response)
+            {
+                console.log(response);
+                let counter=0;
+                for(item of response)
+                {
+                    var element = $(`input[name="secenek${counter}"]:checked`);
+                    let label = $("#"+item.selectedAnswerId);
+                    console.log(element);
+                   if(item.correctAnswer==element.val())
+                   {
+
+                    label.css("background-color", "green");
+                    console.log("doğru");
+                   }
+                   else{
+                label.css("background-color", "red");
+                    console.log("yanlış");
+
+                   }
+                   counter++;
+                }
+            }
+        });
+
+    });
+</script>
+</html>
+

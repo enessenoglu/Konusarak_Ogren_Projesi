@@ -1,0 +1,30 @@
+﻿Merhabalar
+Gönderilen pdfdeki bütün görevler başarıyla gerçekleştirildi.
+Lakin son dakikada çıkan context sayfasının yapısının değişmesi 
+bütün planlarımı suya düşürdü gözlemlediğim kadarıyla önceki yapının aksine
+
+
+ foreach (var item in data)
+            {
+                
+                var contenturl = item.Content;
+                var docContent = web.Load(contenturl);
+                IList<HtmlNode> nodesContent = docContent.QuerySelectorAll("div.BaseWrap-sc-TURhJ")[0]
+                .QuerySelectorAll("div.BaseWrap-sc-TURhJ");
+                if (nodesContent==null)
+                {
+                    
+                }
+                var contentData = nodesContent.Select(node =>
+                {
+                    return node.QuerySelector("div.GridWrapper-vNBSO div div div div p").InnerText;
+                }).FirstOrDefault();
+
+                if (contentData != null)
+                    item.Content = contentData;
+
+
+            }
+
+Bundan sonraki gelecek Contexlerin son 2 tanesi bu yapıda olduğu için bundan sonrakilerinde bu yapıda 
+devam edeceğini düşünüyorum.Geriye kalan bütün görevler tamamlandı.
